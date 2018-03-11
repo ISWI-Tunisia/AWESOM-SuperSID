@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Ahmed Ammar, ahmed.ammar@fst.utm.tn
-Purpose: Load NaroowBand data
+Purpose: Load NarrowBand data
 Inputs: - - -
 Outputs:  - - -
 Date Created: Sat Mar 10 19:10:30 2018
@@ -44,6 +44,8 @@ def Load_DAQ_Data(path="",fname=""):
         hr = LoadData['start_hour']
         mn = LoadData['start_minute']
         sec= LoadData['start_second']
+        StationInfo={'data_type':data_type, 'station_lat':station_lat,
+                     'station_lon':station_lon, 'direction':direction, 'fs':fs}
         
         Tstart = [float(year),float(month),float(day),float(hr),float(mn),float(sec)] # vector of time.
     #    print("Tstart: ", Tstart)
@@ -66,17 +68,20 @@ def Load_DAQ_Data(path="",fname=""):
 #        print (t1)
         time.append(t1)
     time=np.array(time)
-    return time, Data
+    
+    
+    return time, Data, StationInfo
 
-
-# FOR TEST
-time, Data =Load_DAQ_Data("C:\\NarrowbandData\\Tunisia\\2017\\09_06\\", "*170906*NSC_001B.mat")
-#print(len(Data))
-
-#for large data
-plt.rcParams['agg.path.chunksize'] = 10000 
-# solution given by: Serenity, 
-#link: https://stackoverflow.com/questions/37470734/matplotlib-giving-error-overflowerror-in-draw-path-exceeded-cell-block-limit
-plt.plot(time, Data, lw=.5, color='r')
-plt.show() 
+if __name__ == "__main__":
+    # FOR TEST
+    time, Data, StationInfo =Load_DAQ_Data("C:\\NarrowbandData\\Tunisia\\2017\\09_06\\", "*170906*NRK_001A.mat")
+    #print(len(Data))
+    
+    #for large data
+    plt.rcParams['agg.path.chunksize'] = 10000 
+    # solution given by: Serenity, 
+    #link: https://stackoverflow.com/questions/37470734/matplotlib-giving-error-overflowerror-in-draw-path-exceeded-cell-block-limit
+    plt.plot(time, Data, lw=.5, color='r')
+    plt.show()
+    print("Done!")
 
