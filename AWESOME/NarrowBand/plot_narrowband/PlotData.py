@@ -16,20 +16,21 @@ from DAQ_DataPhase import FixDAQ_DataPhase
 import numpy as np
 import matplotlib.pyplot as plt
 
-d=FixDAQ_DataPhase("C:\\NarrowbandData\\Tunisia\\2017\\09_04\\", "*170904*NAA_001A.mat")
+# FIXME: d is a bad variable! Should be fixed
+d=FixDAQ_DataPhase("C:\\NarrowbandData\\Tunisia\\2017\\09_02\\", "*170902*NRK_000A.mat")
 time, Data, StationInfo =Load_DAQ_Data(d.path, d.filename)
 
 fs=StationInfo['fs']
 if StationInfo['data_type']==1.0:
     Data_amp= Data
     ##Averaging
-    AveragingLengthAmp = 20
+    AveragingLengthAmp = 10
     data_amp_averaged = np.zeros((len(Data_amp) - AveragingLengthAmp + 1,1),float)
     for jj in range(0, (len(Data_amp)-AveragingLengthAmp+1)):
         data_amp_averaged[jj] = np.mean(Data_amp[jj:(jj+AveragingLengthAmp-1)])
         
-    plt.plot(time[:len(data_amp_averaged)], data_amp_averaged, lw=1, color='r')
-    plt.plot(time, Data_amp, lw=.5, color='b', alpha=.5)
+    plt.plot(time[:len(data_amp_averaged)], 20*np.log10(data_amp_averaged), lw=1, color='r')
+    plt.plot(time, 20*np.log10(Data_amp), ls='-', lw=.5, color='b', alpha=.5)
     plt.show()
 else:
     Data_phi= Data
