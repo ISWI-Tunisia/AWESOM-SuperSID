@@ -13,12 +13,14 @@ Versions:
 '''
 
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout,\
-                            QGroupBox, QDialog, QVBoxLayout, QDateEdit, QLabel
+from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QHBoxLayout,
+                            QGroupBox, QDialog, QVBoxLayout, QDateEdit, QLabel,
+                            QSpinBox, QGridLayout, QComboBox, QCheckBox)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, QLocale, QDate, QDateTime
  
 from PlotData import Plot_Data
+from SitesInfo import Rx_ID, Tx_ID
 
 class App(QDialog):
  
@@ -27,7 +29,7 @@ class App(QDialog):
         self.title = 'Data Viewer'
         self.left = 200
         self.top = 200
-        self.width = 320
+        self.width = 500
         self.height = 100
         self.initUI()
  
@@ -35,12 +37,17 @@ class App(QDialog):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.setWindowIcon(QIcon('imgs/ISWI_Logo_sm.jpg'))
- 
+        # Plot Button
+        buttonPlot = QPushButton('Plot', self)
+        buttonPlot.clicked.connect(self.on_plot)
+        
         self.createHorizontalLayout()
- 
+        self.createGroupGridBox()
         windowLayout = QVBoxLayout()
         windowLayout.addWidget(self.horizontalQWidget)
         windowLayout.addWidget(self.horizontalGroupBox)
+        windowLayout.addWidget(buttonPlot)
+        
         self.setLayout(windowLayout)
  
         self.show()
@@ -64,25 +71,71 @@ class App(QDialog):
         date= DateEdit.date()
         DateEdit.dateChanged[QDate].connect(self.on_ShowDate)
         
-#        buttonBlue = QPushButton('Done', self)
-#        buttonBlue.clicked.connect(self.on_plot)
-#        layout1.addWidget(buttonBlue) 
-# 
+        # Nember of subplots
+        ## Label N Subplots
+        label_nSubplots= QLabel('Number of Subplots', self)
+        layout1.addWidget(label_nSubplots)
+         ## SpinBox N Subplots
+        self.nSubplots= QSpinBox(self)
+        self.nSubplots.setMinimum(0)
+        self.nSubplots.setMaximum(10)
+        self.nSubplots.setValue(0)
+        self.nSubplots.setSingleStep(1)
+        self.nSubplots.valueChanged.connect(self.on_nSubplots)
+        layout1.addWidget(self.nSubplots)
+        
         self.horizontalQWidget.setLayout(layout1)
-        
-        self.horizontalGroupBox = QGroupBox(" Subplots")
-        layout2 = QHBoxLayout()
-        
-        buttonPlot = QPushButton('Plot', self)
-        buttonPlot.clicked.connect(self.on_plot)
-        layout2.addWidget(buttonPlot) 
- 
-        self.horizontalGroupBox.setLayout(layout2)
+    def createGroupGridBox(self):
+            # Group Box 
+            self.horizontalGroupBox = QGroupBox(" Subplots")
+            #TODO: Grid layout to be incrimented for N subplots
+            self.layout2 = QGridLayout()
+            self.layout2.setColumnStretch(1, 4)
+            self.layout2.setColumnStretch(2, 4)
+            self.NemberOfSubplots=self.nSubplots.value()           
+            ## See Function (signal)
+            
+            self.horizontalGroupBox.setLayout(self.layout2)
+            
  
     @pyqtSlot()
     def on_plot(self):
         print('PyQt5 button click')
-        Plot_Data(pathname="H:\\NarrowbandData\\Algeria\\2015\\03\\20\\", filename="*150320*NRK_000B.mat")
+        Plot_Data(pathname="H:\\NarrowbandData\\Algeria\\2015\\03\\20\\", filename="*150320*NRK_000A.mat")
+    
+    @pyqtSlot(int)
+    def on_nSubplots(self, value):
+    ## Clear widgets from layout: PALEN & Blaa_Thor 
+    ##(https://stackoverflow.com/questions/4528347/clear-all-widgets-in-a-layout-in-pyqt)
+        for i in reversed(range(self.layout2.count())): 
+            widgetToRemove = self.layout2.itemAt( i ).widget()
+            # remove it from the layout list
+            self.layout2.removeWidget( widgetToRemove )
+            # remove it from the gui
+            widgetToRemove.setParent( None )
+        self.setLayout(self.layout2)
+        
+        for i in range(1,value+1):
+            c1 = QLabel("Subplot N %i" % i)
+            self.layout2.addWidget(c1, i,0)
+            ## Recievers
+            Rx=  QComboBox(self)
+            Rx.addItems(Rx_ID.keys())
+            self.layout2.addWidget(Rx,i,1)
+            ## Transmitters
+            Tx=  QComboBox(self)
+            Tx.addItems(Tx_ID.keys())
+            c2 = QLabel("Transmitter")
+            self.layout2.addWidget(c2, i,2)
+            self.layout2.addWidget(Tx,i,3)
+            ## High/Low res
+            Low_High = QCheckBox("Low/High res",self)
+            self.layout2.addWidget(Low_High,i,4)
+            ## Amp/Phi
+            Amplitude_Phase = QCheckBox("Amplitude/Phase",self)
+            self.layout2.addWidget(Amplitude_Phase,i,5)
+                
+        self.setLayout(self.layout2)
     
     def on_ShowDate(self, date):
         '''
