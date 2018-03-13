@@ -74,7 +74,7 @@ def Load_DAQ_Data(path="",fname=""):
 
 if __name__ == "__main__":
     # FOR TEST
-    time, Data, StationInfo =Load_DAQ_Data("C:\\NarrowbandData\\Tunisia\\2017\\09_06\\", "*170906*NRK_001A.mat")
+    time, Data, StationInfo =Load_DAQ_Data("H:\\NarrowbandData\\Algeria\\2015\\03\\20\\", "*150320*NRK_000B.mat")
     #print(len(Data))
     
     #for large data

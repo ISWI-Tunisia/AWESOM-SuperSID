@@ -11,14 +11,27 @@ Versions:
     V0.01: ---
 '''
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 from SitesInfo import Rx_sites
+from PlotData import Plot_Data
 class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
         
         self.initUI()
+        
+         ## Select date 
+        date= self.dateEdit.date()
+        self.dateEdit.dateChanged[QtCore.QDate].connect(self.showDate)
+        #TODO:
+        # Receivers Sites Names : Prepare for station selction!
+        print(Rx_sites)
+        k=[key for key in Rx_sites]
+        print(k)
+            
+        for key in Rx_sites:
+            print(Rx_sites[key])
         
         
         
@@ -31,38 +44,47 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(500, 300)
         self.setMinimumSize(QtCore.QSize(500, 300))
         self.setMaximumSize(QtCore.QSize(500, 1000))
+        self.setWindowIcon(QtGui.QIcon('imgs/ISWI_Logo_sm.jpg'))
         ## Title
         self.setWindowTitle('DaqViewer')
         
-        # QDateEdit widget
-        self.dateEdit = QtWidgets.QDateEdit(self)
-        self.dateEdit.move(20, 20)
+        # QDateEdit widget        
+        ## Date Label
+        self.label_date= QtWidgets.QLabel(self)
+        self.label_date.move(20, 40)
         
-        self.dateEdit.setGeometry(QtCore.QRect(20, 20, 110, 22))
+        self.dateEdit = QtWidgets.QDateEdit(self)
+      
+        self.dateEdit.setGeometry(QtCore.QRect(50, 45, 110, 22))
         self.dateEdit.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.dateEdit.setCalendarPopup(True)
         
         self.today= QtCore.QDateTime.currentDateTime().date()
         self.dateEdit.setDate(QtCore.QDate(self.today))
-        ## Format date
-        _translate = QtCore.QCoreApplication.translate
-        self.dateEdit.setDisplayFormat(_translate("MainWindow", "dd-MMMM-yyyy"))
-        ## Select date 
-        date= self.dateEdit.date()
-        self.dateEdit.dateChanged[QtCore.QDate].connect(self.showDate)
-        #TODO:
-        # Receivers Sites Names : Prepare for station selction!
-        print(Rx_sites)
-        k=[key for key in Rx_sites]
-        print(k)
-            
-        for key in Rx_sites:
-            print(Rx_sites[key])
-            
-    def showDate(self, date):     
         
+        # Plot button
+        self.plot_btn=QtWidgets.QPushButton(self)
+        self.plot_btn.setGeometry(QtCore.QRect(200, 200, 110, 22))
+        self.plot_btn.clicked.connect(self.plot)
+       
+    
+        self.retranslateUi()
+            
+    def retranslateUi(self):
+         ## Format date
+         _translate = QtCore.QCoreApplication.translate
+         self.dateEdit.setDisplayFormat(_translate("MainWindow", "dd-MMMM-yyyy"))
+         self.label_date.setText(_translate("MainWindow", "Date"))
+         self.plot_btn.setText(_translate("MainWindow", "Plot"))
+    def plot(self):
+        print("hello!")
+        Plot_Data(pathname="H:\\NarrowbandData\\Algeria\\2015\\03\\20\\", filename="*150320*NRK_000A.mat")
+            
+    def showDate(self, date):
 #        self.lbl.setText(date.toString())
         print(date.toPyDate())
+        
+    
         
 if __name__ == "__main__":
     import sys
