@@ -32,7 +32,8 @@ class App(QDialog):
         self.width = 500
         self.height = 100
         self.initUI()
- 
+        self.loopwidgets()
+        
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -79,7 +80,7 @@ class App(QDialog):
         self.nSubplots= QSpinBox(self)
         self.nSubplots.setMinimum(0)
         self.nSubplots.setMaximum(10)
-        self.nSubplots.setValue(0)
+        self.nSubplots.setValue(2)
         self.nSubplots.setSingleStep(1)
         self.nSubplots.valueChanged.connect(self.on_nSubplots)
         layout1.addWidget(self.nSubplots)
@@ -88,24 +89,20 @@ class App(QDialog):
     def createGroupGridBox(self):
             # Group Box 
             self.horizontalGroupBox = QGroupBox(" Subplots")
-            #TODO: Grid layout to be incrimented for N subplots
             self.layout2 = QGridLayout()
             self.layout2.setColumnStretch(1, 4)
             self.layout2.setColumnStretch(2, 4)
             self.NemberOfSubplots=self.nSubplots.value()           
-            ## See Function (signal)
+            ## loopwidgets in this groupbox       
             
             self.horizontalGroupBox.setLayout(self.layout2)
             
- 
-    @pyqtSlot()
-    def on_plot(self):
-        print('PyQt5 button click')
-        Plot_Data(pathname="H:\\NarrowbandData\\Algeria\\2015\\03\\20\\", filename="*150320*NRK_000A.mat")
-    
-    @pyqtSlot(int)
-    def on_nSubplots(self, value):
-    ## Clear widgets from layout: PALEN & Blaa_Thor 
+    def loopwidgets(self):
+        """
+        interactiveny add N widgets to generate N subplots
+        @todo: Update list of all current text for each combo box 
+        """
+        ## Clear widgets from layout: PALEN & Blaa_Thor 
     ##(https://stackoverflow.com/questions/4528347/clear-all-widgets-in-a-layout-in-pyqt)
         for i in reversed(range(self.layout2.count())): 
             widgetToRemove = self.layout2.itemAt( i ).widget()
@@ -115,13 +112,17 @@ class App(QDialog):
             widgetToRemove.setParent( None )
         self.setLayout(self.layout2)
         
-        for i in range(1,value+1):
+        self.list1=[]
+        for i in range(1,self.nSubplots.value()+1):
             c1 = QLabel("Subplot N %i" % i)
             self.layout2.addWidget(c1, i,0)
+            
             ## Recievers
-            Rx=  QComboBox(self)
-            Rx.addItems(Rx_ID.keys())
-            self.layout2.addWidget(Rx,i,1)
+            self.Rx=  QComboBox(self)
+            self.Rx.addItems(Rx_ID.keys())
+            self.layout2.addWidget(self.Rx,i,1)
+            self.Rx.currentIndexChanged.connect(self.Rx_selection)
+            
             ## Transmitters
             Tx=  QComboBox(self)
             Tx.addItems(Tx_ID.keys())
@@ -134,9 +135,20 @@ class App(QDialog):
             ## Amp/Phi
             Amplitude_Phase = QCheckBox("Amplitude/Phase",self)
             self.layout2.addWidget(Amplitude_Phase,i,5)
-                
         self.setLayout(self.layout2)
     
+    @pyqtSlot()
+    def on_plot(self):
+        print('PyQt5 button click')
+        Plot_Data(pathname="H:\\NarrowbandData\\Algeria\\2015\\03\\20\\", filename="*150320*NRK_000A.mat")
+    
+    @pyqtSlot(int)
+    def on_nSubplots(self, value):
+        self.loopwidgets()
+        
+    def Rx_selection(self, text):
+
+        print(str(self.Rx.currentText()))
     def on_ShowDate(self, date):
         '''
         Select Year, Month and Day from calander
