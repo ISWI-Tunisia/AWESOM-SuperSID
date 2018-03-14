@@ -75,4 +75,4 @@ def Plot_Data(pathname="", filename=""):
         plt.ylabel("Phase (deg)", weight = 'bold')
         plt.show()
 if __name__ == "__main__":
-    Plot_Data(pathname="H:\\NarrowbandData\\Algeria\\2015\\03\\20\\", filename="*150320*NRK_000B.mat")
+    Plot_Data(pathname="H:\\NarrowbandData\\Algeria\\2015\\03\\20\\", filename="*150320*NRK_000A.mat")

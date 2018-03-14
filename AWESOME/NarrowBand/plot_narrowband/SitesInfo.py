@@ -8,7 +8,8 @@ Date Created: Mon Mar 12 22:23:34 2018
 # TODO: Add All Rx Sites
 Rx_ID = {
             "Algeria":"AL",
-            "Tunisia":"TN"
+            "Tunisia":"TN",
+            "France":"FR",
             }
 
 # TODO: Create dictionary for Tx Sites
