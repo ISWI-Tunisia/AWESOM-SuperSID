@@ -12,7 +12,7 @@ Versions:
 '''
 
 from PyQt5 import QtWidgets, QtCore, QtGui
-from SitesInfo import Rx_sites
+from SitesInfo import Rx_ID
 from PlotData import Plot_Data
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -26,12 +26,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dateEdit.dateChanged[QtCore.QDate].connect(self.showDate)
         #TODO:
         # Receivers Sites Names : Prepare for station selction!
-        print(Rx_sites)
-        k=[key for key in Rx_sites]
+        print(Rx_ID)
+        k=[key for key in Rx_ID]
         print(k)
             
-        for key in Rx_sites:
-            print(Rx_sites[key])
+        for key in Rx_ID:
+            print(Rx_ID[key])
         
         
         
