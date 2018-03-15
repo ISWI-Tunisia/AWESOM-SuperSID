@@ -14,8 +14,9 @@ Versions:
 
 import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QHBoxLayout,
+                             QAction,QToolBar,
                             QGroupBox, QDialog, QVBoxLayout, QDateEdit, QLabel,
-                            QSpinBox, QGridLayout, QComboBox, QCheckBox)
+                            QLineEdit, QTextEdit, QGridLayout, QComboBox, QCheckBox)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, QLocale, QDate, QDateTime
  
@@ -30,7 +31,7 @@ class App(QDialog):
         self.left = 200
         self.top = 200
         self.width = 500
-        self.height = 100
+        self.height = 200
         self.initUI()
         self.update_PathFileNames()
         
@@ -38,21 +39,37 @@ class App(QDialog):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.setWindowIcon(QIcon('imgs/ISWI_Logo_sm.jpg'))
-        # Plot Button
-        buttonPlot = QPushButton('Plot', self)
-        buttonPlot.clicked.connect(self.on_plot)
+        
+        # Tool bar
+        self.tb=QToolBar(self)
+        tuto=QAction(QIcon('imgs/open.png'), "&Tutorial (Ctrl+T)",
+                self, shortcut="Ctrl+T", triggered=self.tutorial)
+        self.tb.addAction(tuto)
+        alert=QAction(QIcon('imgs/new.png'),"&About (Ctrl+A)",
+                self, shortcut="Ctrl+A", triggered=self.about)
+        self.tb.addAction(alert)
+        #Horizontal layout
         
         self.createHorizontalLayout()
         self.createGroupGridBox()
         windowLayout = QVBoxLayout()
+        windowLayout.addWidget(self.tb)
         windowLayout.addWidget(self.horizontalQWidget)
         windowLayout.addWidget(self.horizontalGroupBox)
+        # Plot Button
+        buttonPlot = QPushButton('Plot', self)
+        buttonPlot.clicked.connect(self.on_plot)
         windowLayout.addWidget(buttonPlot)
         
         self.setLayout(windowLayout)
- 
+        
         self.show()
- 
+    
+
+    def tutorial(self):
+        print("tuto")
+    def about(self):
+        print("about")
     def createHorizontalLayout(self):
         self.horizontalQWidget = QWidget()
         layout1 = QHBoxLayout()
@@ -74,8 +91,15 @@ class App(QDialog):
         self.date= DateEdit.date()
         self.date= self.date.toPyDate()
         self.year, self.month, self.day = self.date.year, '{:02d}'.format(self.date.month), '{:02d}'.format(self.date.day)
+        # Edit path to Narrowband Data
+        label_PathNarrow = QLabel('path to Narrowband Data', self)
+        layout1.addWidget(label_PathNarrow)
+        self.PathText= QLineEdit("H:\\NarrowbandData\\",self)
+        self.PathText.textChanged[str].connect(self.update_PathFileNames)
+        layout1.addWidget(self.PathText)
         
         self.horizontalQWidget.setLayout(layout1)
+        
     def createGroupGridBox(self):
             # Group Box 
             self.horizontalGroupBox = QGroupBox(" Subplots")
@@ -151,12 +175,15 @@ class App(QDialog):
             
             self.Low_High2 = QCheckBox("Low Res/(High Res)",self)
             self.layout2.addWidget(self.Low_High2,1,4)
+            self.Low_High2.toggled.connect(self.update_PathFileNames)
             
             self.Low_High3 = QCheckBox("Low Res/(High Res)",self)
             self.layout2.addWidget(self.Low_High3,2,4)
+            self.Low_High3.toggled.connect(self.update_PathFileNames)
             
             self.Low_High4 = QCheckBox("Low Res/(High Res)",self)
             self.layout2.addWidget(self.Low_High4,3,4)
+            self.Low_High4.toggled.connect(self.update_PathFileNames)
             
             ## Amp/Phi
             self.Amplitude_Phase1 = QCheckBox("Amplitude/(Phase)",self)
@@ -165,12 +192,15 @@ class App(QDialog):
             
             self.Amplitude_Phase2 = QCheckBox("Amplitude/(Phase)",self)
             self.layout2.addWidget(self.Amplitude_Phase2,1,5)
+            self.Amplitude_Phase2.toggled.connect(self.update_PathFileNames)
             
             self.Amplitude_Phase3 = QCheckBox("Amplitude/(Phase)",self)
             self.layout2.addWidget(self.Amplitude_Phase3,2,5)
+            self.Amplitude_Phase3.toggled.connect(self.update_PathFileNames)
             
             self.Amplitude_Phase4 = QCheckBox("Amplitude/(Phase)",self)
             self.layout2.addWidget(self.Amplitude_Phase4,3,5)
+            self.Amplitude_Phase4.toggled.connect(self.update_PathFileNames)
             
             
             self.setLayout(self.layout2)
@@ -180,10 +210,11 @@ class App(QDialog):
 #        print(str(self.date.year))
         self.pathnames=[]
         self.filenames=[]
+        
         if self.subplot1.isChecked():
             self.Rx1.setEnabled(True); self.Tx1.setEnabled(True) 
             self.Low_High1.setEnabled(True); self.Amplitude_Phase1.setEnabled(True)
-            self.path1= "H:\\NarrowbandData\\"+ \
+            self.path1= self.PathText.text() + \
             self.Rx1.currentText() + "\\" + str(self.year) + \
             "\\" + str(self.month) + "\\" + str(self.day) + "\\"
             if self.Amplitude_Phase1.isChecked() and self.Low_High1.isChecked():
@@ -202,40 +233,86 @@ class App(QDialog):
         else:
             self.Rx1.setEnabled(False); self.Tx1.setEnabled(False)
             self.Low_High1.setEnabled(False); self.Amplitude_Phase1.setEnabled(False)
+        
         if self.subplot2.isChecked():
             self.Rx2.setEnabled(True); self.Tx2.setEnabled(True) 
             self.Low_High2.setEnabled(True); self.Amplitude_Phase2.setEnabled(True)
-            self.pathnames.append("path 2")
-            self.file2="file 2"
+            self.path2= "H:\\NarrowbandData\\"+ \
+            self.Rx2.currentText() + "\\" + str(self.year) + \
+            "\\" + str(self.month) + "\\" + str(self.day) + "\\"
+            if self.Amplitude_Phase2.isChecked() and self.Low_High2.isChecked():
+                self.AmpPhi="D"
+            elif self.Low_High2.isChecked():
+                self.AmpPhi="C"
+            elif self.Amplitude_Phase2.isChecked():
+                self.AmpPhi="B"
+            else:
+                self.AmpPhi="A"
+            
+            self.file2=Rx_ID[self.Rx2.currentText()]+ str(self.year)[2:]+str(self.month)+str(self.day)+ \
+            "*" + Tx_ID[self.Tx2.currentText()] + self.AmpPhi + ".mat"
+            self.pathnames.append(self.path2)
             self.filenames.append(self.file2)
         else:
             self.Rx2.setEnabled(False); self.Tx2.setEnabled(False)
             self.Low_High2.setEnabled(False); self.Amplitude_Phase2.setEnabled(False)
             
+            
         if self.subplot3.isChecked():
             self.Rx3.setEnabled(True); self.Tx3.setEnabled(True) 
             self.Low_High3.setEnabled(True); self.Amplitude_Phase3.setEnabled(True)
-            self.pathnames.append("path 3")
+            self.path3= "H:\\NarrowbandData\\"+ \
+            self.Rx3.currentText() + "\\" + str(self.year) + \
+            "\\" + str(self.month) + "\\" + str(self.day) + "\\"
+            if self.Amplitude_Phase3.isChecked() and self.Low_High3.isChecked():
+                self.AmpPhi="D"
+            elif self.Low_High3.isChecked():
+                self.AmpPhi="C"
+            elif self.Amplitude_Phase3.isChecked():
+                self.AmpPhi="B"
+            else:
+                self.AmpPhi="A"
+            
+            self.file3=Rx_ID[self.Rx3.currentText()]+ str(self.year)[2:]+str(self.month)+str(self.day)+ \
+            "*" + Tx_ID[self.Tx3.currentText()] + self.AmpPhi + ".mat"
+            self.pathnames.append(self.path3)
+            self.filenames.append(self.file3)
         else:
-            self.Rx3.setEnabled(False); self.Tx3.setEnabled(False) 
+            self.Rx3.setEnabled(False); self.Tx3.setEnabled(False)
             self.Low_High3.setEnabled(False); self.Amplitude_Phase3.setEnabled(False)
             
         if self.subplot4.isChecked():
             self.Rx4.setEnabled(True); self.Tx4.setEnabled(True) 
             self.Low_High4.setEnabled(True); self.Amplitude_Phase4.setEnabled(True)
-            self.pathnames.append("path 4")
+            self.path4= "H:\\NarrowbandData\\"+ \
+            self.Rx4.currentText() + "\\" + str(self.year) + \
+            "\\" + str(self.month) + "\\" + str(self.day) + "\\"
+            if self.Amplitude_Phase4.isChecked() and self.Low_High4.isChecked():
+                self.AmpPhi="D"
+            elif self.Low_High4.isChecked():
+                self.AmpPhi="C"
+            elif self.Amplitude_Phase4.isChecked():
+                self.AmpPhi="B"
+            else:
+                self.AmpPhi="A"
+            
+            self.file4=Rx_ID[self.Rx4.currentText()]+ str(self.year)[2:]+str(self.month)+str(self.day)+ \
+            "*" + Tx_ID[self.Tx4.currentText()] + self.AmpPhi + ".mat"
+            self.pathnames.append(self.path4)
+            self.filenames.append(self.file4)
         else:
-            self.Rx4.setEnabled(False); self.Tx4.setEnabled(False) 
+            self.Rx4.setEnabled(False); self.Tx4.setEnabled(False)
             self.Low_High4.setEnabled(False); self.Amplitude_Phase4.setEnabled(False)
         
         print(self.pathnames)
         print(self.filenames)
+        print(len(self.pathnames))
             
     def on_plot(self):
         try:
             print('PyQt5 button click')
             print(self.pathnames[0])
-            Plot_Data(pathname=self.pathnames[0], filename=self.filenames[0])
+            Plot_Data(pathnames=self.pathnames, filenames=self.filenames)
         except:
             pass
         
