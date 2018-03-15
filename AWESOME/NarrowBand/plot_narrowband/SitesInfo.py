@@ -7,8 +7,8 @@ Date Created: Mon Mar 12 22:23:34 2018
 '''
 # TODO: Add All Rx Sites
 Rx_ID = {
-            "Algeria":"AL",
             "Tunisia":"TN",
+            "Algeria":"AL",
             "France":"FR",
             "Japan":"JP",
             "New York":"NY",
