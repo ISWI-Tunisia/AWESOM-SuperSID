@@ -10,6 +10,9 @@ Rx_ID = {
             "Algeria":"AL",
             "Tunisia":"TN",
             "France":"FR",
+            "Japan":"JP",
+            "New York":"NY",
+            "Boston":"BO"
             }
 
 # TODO: Create dictionary for Tx Sites
@@ -17,5 +20,10 @@ Tx_ID = {
             "NAA-NS":"NAA_000", 
             "NAA-EW":"NAA_001",
             "NRK-NS":"NRK_000",
-            "NRK-EW":"NRK_001"
+            "NRK-EW":"NRK_001",
+            "NLK-NS":"NLK_000",
+            "NLK-EW":"NLK_001",
+            "NAU-NS":"NAU_000",
+            "NAU-EW":"NAU_001"
+            
             }
