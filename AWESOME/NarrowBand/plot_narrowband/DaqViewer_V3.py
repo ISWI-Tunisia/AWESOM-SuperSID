@@ -19,7 +19,8 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QHBoxLayout,
                             QLineEdit, QTextEdit, QGridLayout, QComboBox, QCheckBox)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, QLocale, QDate, QDateTime
- 
+
+from LoadData import DataLoaded_list
 from PlotData import Plot_Data
 from SitesInfo import Rx_ID, Tx_ID
 
@@ -56,6 +57,10 @@ class App(QDialog):
         windowLayout.addWidget(self.tb)
         windowLayout.addWidget(self.horizontalQWidget)
         windowLayout.addWidget(self.horizontalGroupBox)
+        # Text :Show what is going on when clicking on button plot
+        self.TextInfo= QTextEdit("Ready!", self)
+        self.TextInfo.setReadOnly(True)
+        windowLayout.addWidget(self.TextInfo)
         # Plot Button
         buttonPlot = QPushButton('Plot', self)
         buttonPlot.clicked.connect(self.on_plot)
@@ -92,7 +97,7 @@ class App(QDialog):
         self.date= self.date.toPyDate()
         self.year, self.month, self.day = self.date.year, '{:02d}'.format(self.date.month), '{:02d}'.format(self.date.day)
         # Edit path to Narrowband Data
-        label_PathNarrow = QLabel('path to Narrowband Data', self)
+        label_PathNarrow = QLabel('Path to Narrowband Data', self)
         layout1.addWidget(label_PathNarrow)
         self.PathText= QLineEdit("H:\\NarrowbandData\\",self)
         self.PathText.textChanged[str].connect(self.update_PathFileNames)
@@ -309,12 +314,16 @@ class App(QDialog):
         print(len(self.pathnames))
             
     def on_plot(self):
+        
         try:
-            print('PyQt5 button click')
             print(self.pathnames[0])
             Plot_Data(pathnames=self.pathnames, filenames=self.filenames)
+            self.TextInfo.clear()
+            self.TextInfo.insertPlainText("Loaded Data: " + "\n")
+            for data in DataLoaded_list: self.TextInfo.insertPlainText(data + "\n")
         except:
-            pass
+            self.TextInfo.clear()
+            for data in DataLoaded_list: self.TextInfo.insertPlainText("Error! " + "\n" +  data + "\n")
         
         
     def on_ShowDate(self, date):
