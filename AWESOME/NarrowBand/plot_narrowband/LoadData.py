@@ -15,7 +15,8 @@ import numpy as np
 import glob
 
 import matplotlib.pyplot as plt
-
+global DataLoaded
+DataLoaded_list=[]
 def Load_DAQ_Data(path="",fname=""):
     """
     Load DAQ Data from raw files
@@ -30,7 +31,9 @@ def Load_DAQ_Data(path="",fname=""):
                                    squeeze_me=True)
         
         file=filename.split("\\")
-        print("Loaded Data: ", file[-1])
+        # Add loaded filenames into DataLoaded_list
+        DataLoaded_list.append(file[-1])
+        print("Data Loaded:", file[-1])
         
         data = LoadData['data']
         data_type= LoadData['is_amp']
@@ -58,6 +61,8 @@ def Load_DAQ_Data(path="",fname=""):
 #      Data= np.concatenate(Data)  # all the input arrays must have same number of dimensions!
         Data= np.hstack(Data) # Stack all Data horizontally
     except ValueError:
+            # if error in file name
+            DataLoaded_list.append("No filename like " +fname +" in this directory!")
             print("No filename like " +fname +" in this directory!")
     
     # Time axis
@@ -73,10 +78,10 @@ def Load_DAQ_Data(path="",fname=""):
     return time, Data, StationInfo
 
 if __name__ == "__main__":
+    
     # FOR TEST
     time, Data, StationInfo =Load_DAQ_Data("H:\\NarrowbandData\\Algeria\\2015\\03\\20\\", "*150320*NRK_000B.mat")
     #print(len(Data))
-    
     #for large data
     plt.rcParams['agg.path.chunksize'] = 10000 
     # solution given by: Serenity, 
