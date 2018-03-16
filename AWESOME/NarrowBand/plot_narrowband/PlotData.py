@@ -20,8 +20,13 @@ def Plot_Data(pathnames=[], filenames=[]):
     """
     Plot Amplitude and Phase from AWESOME DATA
     """
-    print(len(pathnames))
+    max_nsp=len(pathnames)
+    
+    nsp=0 # number of subplots
+    fig=plt.figure(figsize=(7.5, 5+max_nsp/4))
     for pathname, filename in zip(pathnames,filenames):
+        nsp+=1
+        
         FixData=FixDAQ_DataPhase(pathname, filename)
         time, Data, StationInfo =Load_DAQ_Data(FixData.path, FixData.filename)
         
@@ -29,16 +34,16 @@ def Plot_Data(pathnames=[], filenames=[]):
         if StationInfo['data_type']==1.0:
             Data_amp= Data
             ##Averaging
-            AveragingLengthAmp = 20
+            AveragingLengthAmp = 10
             data_amp_averaged = np.zeros((len(Data_amp) - AveragingLengthAmp + 1,1),float)
             for jj in range(0, (len(Data_amp)-AveragingLengthAmp+1)):
                 data_amp_averaged[jj] = np.mean(Data_amp[jj:(jj+AveragingLengthAmp-1)])
             ## Figure
-            plt.figure(figsize=(7.5,5))   
+            fig.add_subplot(max_nsp, 1, nsp)
             plt.plot(time[:len(data_amp_averaged)], 20*np.log10(data_amp_averaged), lw=1, color='r')
             plt.plot(time, 20*np.log10(Data_amp), ls='-', lw=.5, color='b', alpha=.5)
-            plt.xlabel("Time (UT)", weight = 'bold')
-            plt.ylabel("Amplitude (dB)", weight = 'bold')
+            plt.xlabel("Time (UT)", fontsize=8, weight = 'bold')
+            plt.ylabel("Amplitude (dB)", fontsize=8, weight = 'bold')
     
         else:
             Data_phi= Data
@@ -69,12 +74,13 @@ def Plot_Data(pathnames=[], filenames=[]):
                 data_phase_averaged[jj] = np.mean(data_phase_unwrapped[jj:(jj+AveragingLengthPhase-1)])
             
             ## Figure
-            plt.figure(figsize=(7.5,5)) 
+            fig.add_subplot(max_nsp, 1, nsp)
             plt.plot(time[:len(data_phase_averaged)], data_phase_averaged, lw=1, color='r')
             plt.plot(time, data_phase_unwrapped, lw=.5, color='b', alpha=.5)
-            plt.xlabel("Time (UT)", weight = 'bold')
-            plt.ylabel("Phase (deg)", weight = 'bold')
-
+            plt.xlabel("Time (UT)", fontsize=8, weight = 'bold')
+            plt.ylabel("Phase (deg)", fontsize=8, weight = 'bold')
+            
+    plt.tight_layout()       
     plt.show()
 if __name__ == "__main__":
     Plot_Data(pathnames=["H:\\NarrowbandData\\Tunisia\\2017\\09\\05\\","H:\\NarrowbandData\\Tunisia\\2017\\09\\06\\" ], filenames=["*170905*NRK_001A.mat","*170906*NRK_001B.mat"])
