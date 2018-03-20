@@ -14,7 +14,7 @@ Versions:
 
 import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QHBoxLayout,
-                             QAction,QToolBar,
+                             QAction,QToolBar, QFileDialog, QMessageBox,
                             QGroupBox, QDialog, QVBoxLayout, QDateEdit, QLabel,
                             QLineEdit, QTextEdit, QGridLayout, QComboBox, QCheckBox)
 from PyQt5.QtGui import QIcon
@@ -31,7 +31,7 @@ class App(QDialog):
         self.title = 'Data Viewer'
         self.left = 200
         self.top = 200
-        self.width = 500
+        self.width = 600
         self.height = 200
         self.initUI()
         self.update_PathFileNames()
@@ -72,9 +72,15 @@ class App(QDialog):
     
 
     def tutorial(self):
-        print("tuto")
+        QMessageBox.aboutQt(self)
     def about(self):
-        print("about")
+        QMessageBox.about(self, "DaqViewer",
+                          '''
+                          This is DaqViewer softaware for visualizing NarrowBand 
+                          Data from AWESOME instrument.\n
+                          Author: Ahmed Ammar \n
+                          Date Created: Tue Mar 13 15:27:51 2018 \n
+                          ''')
     def createHorizontalLayout(self):
         self.horizontalQWidget = QWidget()
         layout1 = QHBoxLayout()
@@ -99,9 +105,13 @@ class App(QDialog):
         # Edit path to Narrowband Data
         label_PathNarrow = QLabel('Path to Narrowband Data', self)
         layout1.addWidget(label_PathNarrow)
-        self.PathText= QLineEdit("H:\\NarrowbandData\\",self)
+        self.PathText= QLineEdit("C:/NarrowbandData/",self)
         self.PathText.textChanged[str].connect(self.update_PathFileNames)
         layout1.addWidget(self.PathText)
+        # Select directory button
+        BtnSelectDir = QPushButton('...', self)
+        BtnSelectDir.clicked.connect(self.on_SelectDir)
+        layout1.addWidget(BtnSelectDir)
         
         self.horizontalQWidget.setLayout(layout1)
         
@@ -220,8 +230,8 @@ class App(QDialog):
             self.Rx1.setEnabled(True); self.Tx1.setEnabled(True) 
             self.Low_High1.setEnabled(True); self.Amplitude_Phase1.setEnabled(True)
             self.path1= self.PathText.text() + \
-            self.Rx1.currentText() + "\\" + str(self.year) + \
-            "\\" + str(self.month) + "\\" + str(self.day) + "\\"
+            self.Rx1.currentText() + "/" + str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day) + "/"
             if self.Amplitude_Phase1.isChecked() and self.Low_High1.isChecked():
                 self.AmpPhi="D"
             elif self.Low_High1.isChecked():
@@ -242,9 +252,9 @@ class App(QDialog):
         if self.subplot2.isChecked():
             self.Rx2.setEnabled(True); self.Tx2.setEnabled(True) 
             self.Low_High2.setEnabled(True); self.Amplitude_Phase2.setEnabled(True)
-            self.path2= "H:\\NarrowbandData\\"+ \
-            self.Rx2.currentText() + "\\" + str(self.year) + \
-            "\\" + str(self.month) + "\\" + str(self.day) + "\\"
+            self.path2= self.PathText.text()+ \
+            self.Rx2.currentText() + "/" + str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day) + "/"
             if self.Amplitude_Phase2.isChecked() and self.Low_High2.isChecked():
                 self.AmpPhi="D"
             elif self.Low_High2.isChecked():
@@ -266,9 +276,9 @@ class App(QDialog):
         if self.subplot3.isChecked():
             self.Rx3.setEnabled(True); self.Tx3.setEnabled(True) 
             self.Low_High3.setEnabled(True); self.Amplitude_Phase3.setEnabled(True)
-            self.path3= "H:\\NarrowbandData\\"+ \
-            self.Rx3.currentText() + "\\" + str(self.year) + \
-            "\\" + str(self.month) + "\\" + str(self.day) + "\\"
+            self.path3= self.PathText.text() + \
+            self.Rx3.currentText() + "/" + str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day) + "/"
             if self.Amplitude_Phase3.isChecked() and self.Low_High3.isChecked():
                 self.AmpPhi="D"
             elif self.Low_High3.isChecked():
@@ -289,9 +299,9 @@ class App(QDialog):
         if self.subplot4.isChecked():
             self.Rx4.setEnabled(True); self.Tx4.setEnabled(True) 
             self.Low_High4.setEnabled(True); self.Amplitude_Phase4.setEnabled(True)
-            self.path4= "H:\\NarrowbandData\\"+ \
-            self.Rx4.currentText() + "\\" + str(self.year) + \
-            "\\" + str(self.month) + "\\" + str(self.day) + "\\"
+            self.path4= self.PathText.text() + \
+            self.Rx4.currentText() + "/" + str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day) + "/"
             if self.Amplitude_Phase4.isChecked() and self.Low_High4.isChecked():
                 self.AmpPhi="D"
             elif self.Low_High4.isChecked():
@@ -312,7 +322,9 @@ class App(QDialog):
         print(self.pathnames)
         print(self.filenames)
         print(len(self.pathnames))
-            
+    def on_SelectDir(self):
+        file = str(QFileDialog.getExistingDirectory(self, "Select Data's Directory (NarrowbandData)"))
+        self.PathText.setText(file+"/")
     def on_plot(self):
         
         try:
