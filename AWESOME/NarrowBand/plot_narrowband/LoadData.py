@@ -17,6 +17,7 @@ import glob
 import matplotlib.pyplot as plt
 global DataLoaded
 DataLoaded_list=[]
+DataError_List=[]
 def Load_DAQ_Data(path="",fname=""):
     """
     Load DAQ Data from raw files
@@ -62,8 +63,8 @@ def Load_DAQ_Data(path="",fname=""):
         Data= np.hstack(Data) # Stack all Data horizontally
     except ValueError:
             # if error in file name
-            DataLoaded_list.append("No filename like " +fname +" in this directory!")
-            print("No filename like " +fname +" in this directory!")
+            DataError_List.append("No filename like " +fname +" in this directory: " + path)
+            print("No filename like " +fname +" in this directory: " + path)
     
     # Time axis
     time= []
@@ -80,7 +81,7 @@ def Load_DAQ_Data(path="",fname=""):
 if __name__ == "__main__":
     
     # FOR TEST
-    time, Data, StationInfo =Load_DAQ_Data("H:\\NarrowbandData\\Algeria\\2015\\03\\20\\", "*150320*NRK_000B.mat")
+    time, Data, StationInfo =Load_DAQ_Data("F:\\NarrowbandData\\Algeria\\2015\\03\\20\\", "*150320*NRK_000B.mat")
     #print(len(Data))
     #for large data
     plt.rcParams['agg.path.chunksize'] = 10000 
