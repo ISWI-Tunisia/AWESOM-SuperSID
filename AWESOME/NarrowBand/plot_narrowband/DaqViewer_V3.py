@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QHBoxLayout,
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, QLocale, QDate, QDateTime
 
-from LoadData import DataLoaded_list
+from LoadData import DataLoaded_list, DataError_List
 from PlotData import Plot_Data
 from SitesInfo import Rx_ID, Tx_ID
 
@@ -225,6 +225,7 @@ class App(QDialog):
 #        print(str(self.date.year))
         self.pathnames=[]
         self.filenames=[]
+        self.TitlePlot=[]
         
         if self.subplot1.isChecked():
             self.Rx1.setEnabled(True); self.Tx1.setEnabled(True) 
@@ -243,8 +244,13 @@ class App(QDialog):
             
             self.file1=Rx_ID[self.Rx1.currentText()]+ str(self.year)[2:]+str(self.month)+str(self.day)+ \
             "*" + Tx_ID[self.Tx1.currentText()] + self.AmpPhi + ".mat"
+            
+            self.title1= self.Rx1.currentText() +", "+ str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day)+ ", "+ self.Tx1.currentText()
+           
             self.pathnames.append(self.path1)
             self.filenames.append(self.file1)
+            self.TitlePlot.append(self.title1)
         else:
             self.Rx1.setEnabled(False); self.Tx1.setEnabled(False)
             self.Low_High1.setEnabled(False); self.Amplitude_Phase1.setEnabled(False)
@@ -266,8 +272,13 @@ class App(QDialog):
             
             self.file2=Rx_ID[self.Rx2.currentText()]+ str(self.year)[2:]+str(self.month)+str(self.day)+ \
             "*" + Tx_ID[self.Tx2.currentText()] + self.AmpPhi + ".mat"
+            
+            self.title2= self.Rx2.currentText() +", "+ str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day)+ ", "+ self.Tx2.currentText()
+            
             self.pathnames.append(self.path2)
             self.filenames.append(self.file2)
+            self.TitlePlot.append(self.title2)
         else:
             self.Rx2.setEnabled(False); self.Tx2.setEnabled(False)
             self.Low_High2.setEnabled(False); self.Amplitude_Phase2.setEnabled(False)
@@ -290,8 +301,13 @@ class App(QDialog):
             
             self.file3=Rx_ID[self.Rx3.currentText()]+ str(self.year)[2:]+str(self.month)+str(self.day)+ \
             "*" + Tx_ID[self.Tx3.currentText()] + self.AmpPhi + ".mat"
+            
+            self.title3= self.Rx3.currentText() +", "+ str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day)+ ", "+ self.Tx3.currentText()
+            
             self.pathnames.append(self.path3)
             self.filenames.append(self.file3)
+            self.TitlePlot.append(self.title3)
         else:
             self.Rx3.setEnabled(False); self.Tx3.setEnabled(False)
             self.Low_High3.setEnabled(False); self.Amplitude_Phase3.setEnabled(False)
@@ -313,31 +329,35 @@ class App(QDialog):
             
             self.file4=Rx_ID[self.Rx4.currentText()]+ str(self.year)[2:]+str(self.month)+str(self.day)+ \
             "*" + Tx_ID[self.Tx4.currentText()] + self.AmpPhi + ".mat"
+            
+            self.title4= self.Rx4.currentText() +", "+ str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day)+ ", "+ self.Tx4.currentText()
+            
             self.pathnames.append(self.path4)
             self.filenames.append(self.file4)
+            self.TitlePlot.append(self.title4)
         else:
             self.Rx4.setEnabled(False); self.Tx4.setEnabled(False)
             self.Low_High4.setEnabled(False); self.Amplitude_Phase4.setEnabled(False)
         
         print(self.pathnames)
         print(self.filenames)
-        print(len(self.pathnames))
+        print(self.TitlePlot)
+
     def on_SelectDir(self):
         file = str(QFileDialog.getExistingDirectory(self, "Select Data's Directory (NarrowbandData)"))
         self.PathText.setText(file+"/")
     def on_plot(self):
-        
         try:
             print(self.pathnames[0])
-            Plot_Data(pathnames=self.pathnames, filenames=self.filenames)
+            Plot_Data(pathnames=self.pathnames, filenames=self.filenames, TitlePlot=self.TitlePlot)
             self.TextInfo.clear()
-            self.TextInfo.insertPlainText("Loaded Data: " + "\n")
-            for data in DataLoaded_list: self.TextInfo.insertPlainText(data + "\n")
+            self.TextInfo.textCursor().insertHtml("<p><h3><font color='blue'>Loaded Data: </font></p>")
+            for data in DataLoaded_list: self.TextInfo.textCursor().insertHtml("<pre><h4><font color='green'>"+data + ", </font></pre>")
         except:
             self.TextInfo.clear()
-            for data in DataLoaded_list: self.TextInfo.insertPlainText("Error! " + "\n" +  data + "\n")
-        
-        
+            for data in DataError_List: self.TextInfo.textCursor().insertHtml("<pre><h4><font color='red'>Error!" + "\n" +  data + ", </font></pre>")
+    
     def on_ShowDate(self, date):
         '''
         Select Year, Month and Day from calander
