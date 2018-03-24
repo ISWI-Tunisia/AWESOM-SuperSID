@@ -24,7 +24,7 @@ def Plot_Data(pathnames=[], filenames=[], TitlePlot=[]):
     
     nsp=0 # number of subplots
     fig=plt.figure(figsize=(7.5, 5+max_nsp/4))
-    plt.gcf().canvas.set_window_title('DaQview: NarrowBand data')
+    plt.gcf().canvas.set_window_title('PyDAQviewer: Plot Narrowband Data')
     for pathname, filename,title in zip(pathnames,filenames,TitlePlot):
         nsp+=1
         

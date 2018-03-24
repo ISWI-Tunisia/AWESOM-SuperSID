@@ -13,6 +13,7 @@ Versions:
 '''
 
 import sys
+import webbrowser, os
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QHBoxLayout,
                              QAction,QToolBar, QFileDialog, QMessageBox,
                             QGroupBox, QDialog, QVBoxLayout, QDateEdit, QLabel,
@@ -28,27 +29,30 @@ class App(QDialog):
  
     def __init__(self):
         super().__init__()
-        self.title = 'Data Viewer'
+        self.title = 'PyDAQviewer'
         self.left = 200
         self.top = 200
         self.width = 600
-        self.height = 200
+        self.height = 400
         self.initUI()
         self.update_PathFileNames()
         
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-        self.setWindowIcon(QIcon('imgs/ISWI_Logo_sm.jpg'))
+        self.setWindowIcon(QIcon('docs/imgs/ISWI_Logo_sm.jpg'))
         
         # Tool bar
         self.tb=QToolBar(self)
-        tuto=QAction(QIcon('imgs/open.png'), "&Tutorial (Ctrl+T)",
+        tuto=QAction(QIcon('docs/imgs/open.png'), "&Tutorial (Ctrl+T)",
                 self, shortcut="Ctrl+T", triggered=self.tutorial)
         self.tb.addAction(tuto)
-        alert=QAction(QIcon('imgs/new.png'),"&About (Ctrl+A)",
+        alert=QAction(QIcon('docs/imgs/new.png'),"&About (Ctrl+A)",
                 self, shortcut="Ctrl+A", triggered=self.about)
         self.tb.addAction(alert)
+        qt=QAction(QIcon('docs/imgs/qt_icon.png'),"&About Qt (Ctrl+G)",
+                self, shortcut="Ctrl+G", triggered=self.aboutQt)
+        self.tb.addAction(qt)
         #Horizontal layout
         
         self.createHorizontalLayout()
@@ -72,15 +76,19 @@ class App(QDialog):
     
 
     def tutorial(self):
-        QMessageBox.aboutQt(self)
+        webbrowser.open('file://' + os.path.realpath("docs/Tutorial.html"))
+
     def about(self):
-        QMessageBox.about(self, "DaqViewer",
+        QMessageBox.about(self, "PyDAQviewer",
                           '''
-                          This is DaqViewer softaware for visualizing NarrowBand 
-                          Data from AWESOME instrument.\n
+                          The VLF PyDAQviewer (Data Acquisition data viewer)
+                          is a Python program designed to make it easier to view
+                          and analyze data acquired with your AWESOME receiver.\n
                           Author: Ahmed Ammar \n
                           Date Created: Tue Mar 13 15:27:51 2018 \n
                           ''')
+    def aboutQt(self):
+        QMessageBox.aboutQt(self)
     def createHorizontalLayout(self):
         self.horizontalQWidget = QWidget()
         layout1 = QHBoxLayout()
@@ -122,6 +130,7 @@ class App(QDialog):
             self.layout2.setColumnStretch(1, 4)
             self.layout2.setColumnStretch(2, 4)           
             ## Groupbox elements
+            
             ### Subplots
             self.subplot1 = QCheckBox("Subplot N° 1", self)
             self.subplot1.setChecked(True)
@@ -141,6 +150,14 @@ class App(QDialog):
             self.subplot4 = QCheckBox("Subplot N° 4", self)
             self.subplot4.toggled.connect(self.update_PathFileNames)
             self.layout2.addWidget(self.subplot4, 3,0)
+            
+            self.subplot5 = QCheckBox("Subplot N° 5", self)
+            self.subplot5.toggled.connect(self.update_PathFileNames)
+            self.layout2.addWidget(self.subplot5, 4,0)
+            
+            self.subplot6 = QCheckBox("Subplot N° 6", self)
+            self.subplot6.toggled.connect(self.update_PathFileNames)
+            self.layout2.addWidget(self.subplot6, 5,0)
             
             ## Recievers
             self.Rx1=  QComboBox(self)
@@ -162,6 +179,17 @@ class App(QDialog):
             self.Rx4.addItems(Rx_ID.keys())
             self.layout2.addWidget(self.Rx4,3,1)
             self.Rx4.currentIndexChanged.connect(self.update_PathFileNames)
+            
+            self.Rx5=  QComboBox(self)
+            self.Rx5.addItems(Rx_ID.keys())
+            self.layout2.addWidget(self.Rx5,4,1)
+            self.Rx5.currentIndexChanged.connect(self.update_PathFileNames)
+            
+            self.Rx6=  QComboBox(self)
+            self.Rx6.addItems(Rx_ID.keys())
+            self.layout2.addWidget(self.Rx6,5,1)
+            self.Rx6.currentIndexChanged.connect(self.update_PathFileNames)
+            
             ## Transmitters
             self.Tx1=  QComboBox(self)
             self.Tx1.addItems(Tx_ID.keys())
@@ -183,6 +211,16 @@ class App(QDialog):
             self.layout2.addWidget(self.Tx4,3,2)
             self.Tx4.currentIndexChanged.connect(self.update_PathFileNames)
             
+            self.Tx5=  QComboBox(self)
+            self.Tx5.addItems(Tx_ID.keys())
+            self.layout2.addWidget(self.Tx5,4,2)
+            self.Tx5.currentIndexChanged.connect(self.update_PathFileNames)
+            
+            self.Tx6=  QComboBox(self)
+            self.Tx6.addItems(Tx_ID.keys())
+            self.layout2.addWidget(self.Tx6,5,2)
+            self.Tx6.currentIndexChanged.connect(self.update_PathFileNames)
+            
             ## High/Low res
             self.Low_High1 = QCheckBox("Low Res/(High Res)",self)
             self.layout2.addWidget(self.Low_High1,0,4)
@@ -200,6 +238,14 @@ class App(QDialog):
             self.layout2.addWidget(self.Low_High4,3,4)
             self.Low_High4.toggled.connect(self.update_PathFileNames)
             
+            self.Low_High5 = QCheckBox("Low Res/(High Res)",self)
+            self.layout2.addWidget(self.Low_High5,4,4)
+            self.Low_High5.toggled.connect(self.update_PathFileNames)
+            
+            self.Low_High6 = QCheckBox("Low Res/(High Res)",self)
+            self.layout2.addWidget(self.Low_High6,5,4)
+            self.Low_High6.toggled.connect(self.update_PathFileNames)
+            
             ## Amp/Phi
             self.Amplitude_Phase1 = QCheckBox("Amplitude/(Phase)",self)
             self.layout2.addWidget(self.Amplitude_Phase1,0,5)
@@ -216,6 +262,14 @@ class App(QDialog):
             self.Amplitude_Phase4 = QCheckBox("Amplitude/(Phase)",self)
             self.layout2.addWidget(self.Amplitude_Phase4,3,5)
             self.Amplitude_Phase4.toggled.connect(self.update_PathFileNames)
+            
+            self.Amplitude_Phase5 = QCheckBox("Amplitude/(Phase)",self)
+            self.layout2.addWidget(self.Amplitude_Phase5,4,5)
+            self.Amplitude_Phase5.toggled.connect(self.update_PathFileNames)
+            
+            self.Amplitude_Phase6 = QCheckBox("Amplitude/(Phase)",self)
+            self.layout2.addWidget(self.Amplitude_Phase6,5,5)
+            self.Amplitude_Phase6.toggled.connect(self.update_PathFileNames)
             
             
             self.setLayout(self.layout2)
@@ -339,6 +393,62 @@ class App(QDialog):
         else:
             self.Rx4.setEnabled(False); self.Tx4.setEnabled(False)
             self.Low_High4.setEnabled(False); self.Amplitude_Phase4.setEnabled(False)
+            
+        if self.subplot5.isChecked():
+            self.Rx5.setEnabled(True); self.Tx5.setEnabled(True) 
+            self.Low_High5.setEnabled(True); self.Amplitude_Phase5.setEnabled(True)
+            self.path5= self.PathText.text() + \
+            self.Rx5.currentText() + "/" + str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day) + "/"
+            if self.Amplitude_Phase5.isChecked() and self.Low_High5.isChecked():
+                self.AmpPhi="D"
+            elif self.Low_High5.isChecked():
+                self.AmpPhi="C"
+            elif self.Amplitude_Phase5.isChecked():
+                self.AmpPhi="B"
+            else:
+                self.AmpPhi="A"
+            
+            self.file5=Rx_ID[self.Rx5.currentText()]+ str(self.year)[2:]+str(self.month)+str(self.day)+ \
+            "*" + Tx_ID[self.Tx5.currentText()] + self.AmpPhi + ".mat"
+            
+            self.title5= self.Rx5.currentText() +", "+ str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day)+ ", "+ self.Tx5.currentText()
+           
+            self.pathnames.append(self.path5)
+            self.filenames.append(self.file5)
+            self.TitlePlot.append(self.title5)
+        else:
+            self.Rx5.setEnabled(False); self.Tx5.setEnabled(False)
+            self.Low_High5.setEnabled(False); self.Amplitude_Phase5.setEnabled(False)
+            
+        if self.subplot6.isChecked():
+            self.Rx6.setEnabled(True); self.Tx6.setEnabled(True) 
+            self.Low_High6.setEnabled(True); self.Amplitude_Phase6.setEnabled(True)
+            self.path6= self.PathText.text() + \
+            self.Rx6.currentText() + "/" + str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day) + "/"
+            if self.Amplitude_Phase6.isChecked() and self.Low_High6.isChecked():
+                self.AmpPhi="D"
+            elif self.Low_High6.isChecked():
+                self.AmpPhi="C"
+            elif self.Amplitude_Phase6.isChecked():
+                self.AmpPhi="B"
+            else:
+                self.AmpPhi="A"
+            
+            self.file6=Rx_ID[self.Rx6.currentText()]+ str(self.year)[2:]+str(self.month)+str(self.day)+ \
+            "*" + Tx_ID[self.Tx6.currentText()] + self.AmpPhi + ".mat"
+            
+            self.title6= self.Rx6.currentText() +", "+ str(self.year) + \
+            "/" + str(self.month) + "/" + str(self.day)+ ", "+ self.Tx6.currentText()
+           
+            self.pathnames.append(self.path6)
+            self.filenames.append(self.file6)
+            self.TitlePlot.append(self.title6)
+        else:
+            self.Rx6.setEnabled(False); self.Tx6.setEnabled(False)
+            self.Low_High6.setEnabled(False); self.Amplitude_Phase6.setEnabled(False)
         
         print(self.pathnames)
         print(self.filenames)
