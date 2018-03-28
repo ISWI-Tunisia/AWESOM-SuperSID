@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Ahmed Ammar, ahmed.ammar@fst.utm.tn
-Purpose: concatinate data
-Inputs: - - -
-Outputs:  - - -
+Original program: matlab code (LongTermNarrowband.m) by Morris Cohen
+Purpose: concatinate longterm AWESOME data (Amplitude NS/EW)
+        Tutorial: "Data exercise on geomagnetic activity and narrowband data" by Morris Cohen
+        AWESOME workshop, Tunisia 2009.
+Inputs: Path to folder, filenames
+Outputs: Image 
 Date Created: Mon Mar 26 20:00:29 2018
-Date Modified: M D, Y
 Date Released: M D, Y
 Versions:
     V0.01: ---
@@ -18,17 +20,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def ConcatData(pathname="", filename=""):
+    
+    global Start, Rx_name, Tx_name
+    Rx_name='Tunisia'
+    Tx_name='NRK'
     AveragingTime = 60
     FileList=glob.glob(pathname+filename)
     FirstFileName= FileList[0]
     LastFileName = FileList[-1]
     LoadFirstData = mat.loadmat(FirstFileName, struct_as_record=False,
-                                       squeeze_me=True)
+                                      squeeze_me=True)
     y1 = int(LoadFirstData['start_year'])
     m1 = int(LoadFirstData['start_month'])
     d1 = int(LoadFirstData['start_day'])
     StartingDate = date.toordinal(date(y1,m1,d1))
-    Start = [y1, m1, d1]
+    Start = date(y1,m1,d1).strftime("%d. %B %Y")
     print(Start)
     LoadLastData = mat.loadmat(LastFileName, struct_as_record=False,
                                        squeeze_me=True)
@@ -67,7 +73,7 @@ def ConcatData(pathname="", filename=""):
     #    print(len(data))
         for jj in np.arange(StartPoint,(len(data)-AveragingTime-1), AveragingTime):
             a=data[int(jj):int(jj+AveragingTime-1)]
-            Average = a.mean(axis=0)
+            Average = np.mean(a, axis=0)
     #        print(Average)
             if adc_channel_number == 0:
     #            print(int(InitialMinute + (jj-1)/60))
@@ -81,19 +87,31 @@ def ConcatData(pathname="", filename=""):
 Range, AmpNS, AmpEW = ConcatData(pathname="H:/NarrowbandData/Tunisia/2017/09/NRK/", filename="*NRK*A.mat")
 
 fig=plt.figure(figsize=(7.5, 5))
-fig.add_subplot(1, 2, 1)
 
-plt.imshow(20*np.log10(AmpNS), interpolation='nearest', cmap='rainbow',
-           origin='lower', extent=[0, 24 , 0, Range],aspect='auto')
-
-plt.colorbar()
-fig.add_subplot(1, 2, 2)
-
-plt.imshow(20*np.log10(AmpEW), interpolation='gaussian', cmap='rainbow',
-           origin='lower', extent=[0, 24 , 0, Range],aspect='auto')
-
-plt.colorbar()
+if sum(sum(AmpNS)) >0: # If any data has been loaded then plot it
+    fig.add_subplot(1, 2, 1)
+    plt.imshow(20*np.log10(AmpNS), interpolation='Nearest', cmap='jet',
+               origin='lower', extent=[0, 24 , 0, Range],aspect='auto',
+                                      vmin=0, vmax=18)
+    plt.xlabel('Time (UT Hours)', fontsize=10, weight='bold')
+    plt.ylabel('Days after ' + Start, fontsize=10, weight='bold')
+    plt.title(Tx_name +': N/S Amplitude at '+Rx_name, fontsize=10, weight='bold')
+    clb = plt.colorbar()
+    clb.set_label('dB (rel)', labelpad=-20, y=1.05, rotation=0, fontsize=8, weight='bold')
+if sum(sum(AmpEW)) >0:
+    fig.add_subplot(1, 2, 2)
+    
+    plt.imshow(20*np.log10(AmpEW), interpolation='Nearest', cmap='jet',
+               origin='lower', extent=[0, 24 , 0, Range],aspect='auto',
+                                      vmin=0, vmax=18)
+    
+    plt.xlabel('Time (UT Hours)', fontsize=10, weight='bold')
+    plt.ylabel('Days after ' + Start, fontsize=10, weight='bold')
+    plt.title(Tx_name +': E/W Amplitude at '+Rx_name, fontsize=10, weight='bold')
+    clb = plt.colorbar()
+    clb.set_label('dB (rel)', labelpad=-20, y=1.05, rotation=0, fontsize=8, weight='bold')
 plt.tight_layout()
+plt.savefig("LongTermData.png")
 plt.show()
 
 

@@ -16,8 +16,8 @@ import shutil
 for ii in range(1,31):
     dd= str('{:02d}'.format(ii))
     
-    FileList=glob.glob("H:/NarrowbandData/Tunisia/2017/09/"+ dd+ "/*NRK*A.mat")
-    dest_dir="H:/NarrowbandData/Tunisia/2017/09/NRK"
+    FileList=glob.glob("H:/NarrowbandData/Tunisia/2017/09/"+ dd+ "/*DHO*A.mat")
+    dest_dir="H:/NarrowbandData/Tunisia/2017/09/DHO"
     for filename in FileList:
         print(filename)
         shutil.copy(filename, dest_dir)
