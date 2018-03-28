@@ -8,9 +8,9 @@ Purpose: concatinate longterm AWESOME data (Amplitude NS/EW)
 Inputs: Path to folder, filenames
 Outputs: Image 
 Date Created: Mon Mar 26 20:00:29 2018
-Date Released: M D, Y
+Date Released: Wed Mar 28 20:01:49 2018
 Versions:
-    V0.01: ---
+    V0.01
     
 '''
 import glob
@@ -22,8 +22,8 @@ import matplotlib.pyplot as plt
 def ConcatData(pathname="", filename=""):
     
     global Start, Rx_name, Tx_name
-    Rx_name='Tunisia'
-    Tx_name='NRK'
+    Rx_name='Kodiak'
+    Tx_name='NAA'
     AveragingTime = 60
     FileList=glob.glob(pathname+filename)
     FirstFileName= FileList[0]
@@ -84,26 +84,27 @@ def ConcatData(pathname="", filename=""):
     return Range, AmpNS, AmpEW
 
 # now Plot the data in an image
-Range, AmpNS, AmpEW = ConcatData(pathname="H:/NarrowbandData/Tunisia/2017/09/NRK/", filename="*NRK*A.mat")
+Range, AmpNS, AmpEW = ConcatData(pathname="H:/NarrowbandData/NAA/", filename="*NAA*A.mat")
 
 fig=plt.figure(figsize=(7.5, 5))
 
 if sum(sum(AmpNS)) >0: # If any data has been loaded then plot it
     fig.add_subplot(1, 2, 1)
-    plt.imshow(20*np.log10(AmpNS), interpolation='Nearest', cmap='jet',
+    plt.imshow(20*np.log10(AmpNS), interpolation='Nearest', cmap='viridis',
                origin='lower', extent=[0, 24 , 0, Range],aspect='auto',
-                                      vmin=0, vmax=18)
+                                      vmin=15, vmax=45)
     plt.xlabel('Time (UT Hours)', fontsize=10, weight='bold')
     plt.ylabel('Days after ' + Start, fontsize=10, weight='bold')
     plt.title(Tx_name +': N/S Amplitude at '+Rx_name, fontsize=10, weight='bold')
     clb = plt.colorbar()
     clb.set_label('dB (rel)', labelpad=-20, y=1.05, rotation=0, fontsize=8, weight='bold')
+    
 if sum(sum(AmpEW)) >0:
     fig.add_subplot(1, 2, 2)
     
-    plt.imshow(20*np.log10(AmpEW), interpolation='Nearest', cmap='jet',
+    plt.imshow(20*np.log10(AmpEW), interpolation='Nearest', cmap='viridis',
                origin='lower', extent=[0, 24 , 0, Range],aspect='auto',
-                                      vmin=0, vmax=18)
+                                      vmin=0, vmax=30)
     
     plt.xlabel('Time (UT Hours)', fontsize=10, weight='bold')
     plt.ylabel('Days after ' + Start, fontsize=10, weight='bold')
@@ -111,7 +112,7 @@ if sum(sum(AmpEW)) >0:
     clb = plt.colorbar()
     clb.set_label('dB (rel)', labelpad=-20, y=1.05, rotation=0, fontsize=8, weight='bold')
 plt.tight_layout()
-plt.savefig("LongTermData.png")
+plt.savefig(Tx_name+"LongTermData"+Rx_name+".png")
 plt.show()
 
 
