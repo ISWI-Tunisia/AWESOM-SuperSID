@@ -13,8 +13,12 @@ sample_rate, samples = wavfile.read('Tunisia-2015-10-01-00-00-00-0.wav')
 Fs = sample_rate
 
 frequencies, times, spectrogram = signal.spectrogram(samples, Fs,nperseg = 512,
-                                                     nfft=512, noverlap=400)
+                                                     nfft=512, noverlap=100)
+
 spectrogram = 20*np.log(spectrogram)
+
+
+plt.figure()
 plt.pcolormesh(times, frequencies, spectrogram, vmin = 0, vmax=100)
 # plt.imshow(spectrogram)
 plt.ylabel('Frequency [Hz]')

@@ -19,9 +19,9 @@ filename =  filedialog.askopenfilename(initialdir = ".",title = "Select file",
 # read wav file
 sample_rate, samples = wavfile.read('Tunisia-2015-10-01-00-00-00-0.wav')
 Fs = sample_rate
-f, t, Sxx = signal.spectrogram(samples, Fs,nperseg = 512,
+f, t, Sxx = signal.spectrogram(samples, Fs,nperseg = 265,
 
-                                                    nfft=512, noverlap=400)
+                                                    nfft=265, noverlap=100)
 # convert signal to dB
 Sxx = 20 * np.log(Sxx)
 # Interpret image data as row-major instead of col-major
@@ -35,10 +35,18 @@ p1 = win.addPlot()
 # Item for displaying image data
 img = pyqtgraph.ImageItem()
 p1.addItem(img)
+# Custom ROI for selecting an image region
+roi = pyqtgraph.ROI([11.6, 10000], [0.2, 11000])
+roi.addScaleHandle([0.5, 1], [0.5, 0.5])
+roi.addScaleHandle([0, 0.5], [0.5, 0.5])
+p1.addItem(roi)
+roi.setZValue(10)  # make sure ROI is drawn above image
+
 # Add a histogram with which to control the gradient of the image
 hist = pyqtgraph.HistogramLUTItem()
 # Link the histogram to the image
 hist.setImageItem(img)
+
 # If you don't add the histogram to the window, it stays invisible, but I find it useful.
 win.addItem(hist)
 # Show the window
@@ -63,6 +71,21 @@ p1.setLimits(xMin=tStart_P, xMax=tEnd_P, yMin=AmpMin_P, yMax=AmpMax_P)
 p1.setLabel('bottom', "Time", units='s')
 # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
 p1.setLabel('left', "Frequency", units='Hz')
+
+# Another plot area for displaying ROI data
+win.nextRow()
+p2 = win.addPlot(colspan=2)
+p2.setMaximumHeight(200)
+win.resize(800, 600)
+win.show()
+# Callbacks for handling user interaction
+def updatePlot():
+    global img, roi, Sxx, p2
+    selected = roi.getArrayRegion(Sxx, img)
+    p2.plot(selected.mean(axis=0), clear=True)
+
+roi.sigRegionChanged.connect(updatePlot)
+updatePlot()
 
 ## Plotting with Matplotlib in comparison
 #
